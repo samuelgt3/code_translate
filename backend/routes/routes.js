@@ -8,23 +8,21 @@ const app = express();
 app.use(express.json())
 const port = 3000;
 const piston = 'http://localhost:2000/api/v2/'
-//const pistonRUNTIMES = 'http://localhost:2000/api/v2/runtimes'
 const translate = prompts.Translate
-const correction=prompts.CorrectError
 const client = new Anthropic({
   apiKey: process.env.CLAUDE_KEY
-});
-
-app.get('/', (req, res) => {
-
-  res.send('The server is running. Please deploy the react app to interact with it');
 });
 
 app.listen(port, () => {
   console.log(`Example app listening on port ${port}`);
 });
 
-async function runtimes(req,res){
+app.get('/', (res) => {
+  res.send('The server is running. Please deploy the react app to interact with it');
+});
+
+
+async function getRuntimes(){
    try {
     const result = await fetch(piston + 'runtimes', {
       method: "GET",
@@ -37,10 +35,30 @@ const runtimes = await result.json();
     throw new Error({ message: "Execution failed", error: err.message });
   }
 }
-app.get('/api/runtimes/', (req, res) => {runtimes(req,res)})
 
+async function downloadRuntime(req){
+  const {language, version} = req.body
+  const res = await fetch(piston + "packages", {
+  method: "POST",
+  headers: { "Content-Type": "application/json" },
+  body: JSON.stringify({
+    language: language,
+    version: version
+  })
+});
+const result = await res.json();
+console.log(result)
+}
+
+app.post("/api/download/", async (req) => downloadRuntime(req))
+app.get('/api/runtimes/', (res) => {
+  const runtimes = getRuntimes()
+  res.send({runtimes})
+})
 // Run code using Piston API
 async function runCode({language, version, files}) {
+  const runtimes = JSON.stringify(getRuntimes());
+
 //call the piston API
   try {
     const result = await fetch(piston + 'execute', {
@@ -77,7 +95,7 @@ app.post('/api/runcode/', async (req, res) => {
   }});
 
 app.post('/api/translate/', async (req,res) => {
-
+  const runtimes = JSON.stringify(getRuntimes());
   if (!req.body?.target || !req.body?.code || !req.body?.src){
     return res.status(400).json({message: "No input code provided", status: 400})
   }
@@ -91,7 +109,7 @@ const response = await client.messages.create({
   messages: [
     {
       role: "user",
-      content: `target: ${language}, source: ${source}, code: ${code}`
+      content: `target: ${language}, source: ${source}, code: ${code}, runtimes: ${runtimes}`
     }
   ],
   output_config: {
@@ -122,9 +140,7 @@ const result = JSON.parse(response.content[0].text);
     }
 })
 
-app.post('/api/correct', async (msg, wrngmsg, errmsg) => {
-  
-})
+
 
 //export {app};
 
