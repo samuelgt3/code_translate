@@ -1,13 +1,16 @@
-import Editor from "@monaco-editor/react";
-import { response } from "express";
-import Play from 'lucide-react'
+import {Editor} from "@monaco-editor/react";
+import {Play} from 'lucide-react'
 import { useState } from "react";
 
-const [output, setOutput] = useState("");
+
+const api = "http://localhost:3000/api/";
 const LANGUAGE_OPTIONS = ["Python", "JavaScript", "TypeScript", "C++", "C#", "Rust", "Go", "Java"]
-export function CodeEditor({ value, onChange, onLanguageChange, language, readOnly = false }) {
+
+export default function CodeEditor({ value, onChange, onLanguageChange, language, readOnly = false }) {
+    const [output, setOutput] = useState("");
   return (
     <div className="relative">
+        <div className="flex">
         <select 
         value={language}
         onChange={(e) => onLanguageChange(e.target.value)}
@@ -20,7 +23,7 @@ export function CodeEditor({ value, onChange, onLanguageChange, language, readOn
         ))}
       </select>
       <Play 
-      className = "absolute top-2 right-2 z-10 p-2 bg-emerald-600"
+      className = "absolute top-2 right-2 z-10 p-2 bg-emerald-600 size-10"
       onClick={async () => { const result = await fetch(api + 'runcode', {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -30,15 +33,16 @@ export function CodeEditor({ value, onChange, onLanguageChange, language, readOn
      setOutput(data);}
     }
       />
+      </div>
         <Editor
-      height="60vh"
+      height="50vh"
       language={language}
       value={value}
       onChange={(val) => onChange?.(val ?? "")}
       theme="vs-dark"
       options={{
         minimap: { enabled: false },
-        fontSize: 14,
+        fontSize: 10,
         wordWrap: "on",
         scrollBeyondLastLine: false,
         automaticLayout: true,
@@ -46,12 +50,12 @@ export function CodeEditor({ value, onChange, onLanguageChange, language, readOn
       }}
     />
     <Editor
-    height="40vh"
+    height="20vh"
     language="plaintext"
     value={output}
     options={{
         minimap: { enabled: false },
-        fontSize: 14,
+        fontSize: 10,
         wordWrap: "on",
         scrollBeyondLastLine: false,
         automaticLayout: true,

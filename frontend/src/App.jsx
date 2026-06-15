@@ -1,11 +1,29 @@
 import { useState } from 'react'
 import './App.css'
+import  CodeEditor  from './editors'
 
+const handleTranslate = async () => {
+    setLoading(true);
+    try {
+      const res = await fetch("http://localhost:3000/api/translate/", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ src: sourceLang, target: targetLang, code: sourceCode }),
+      });
+      const data = await res.json();
+      setTranslatedCode(data.content ?? "");
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setLoading(false);
+    }
+  };
 
 function App() {
   const [count, setCount] = useState(0)
   const [sourceCode, setSourceCode] = useState("")
   const [targetLang, setTargetLang] = useState("")
+  const [sourceLang, setSourceLang] = useState("")
   const [translatedCode, setTranslatedCode] = useState("");
   const [loading, setLoading] = useState(false);
   return (
@@ -20,11 +38,13 @@ function App() {
         <CodeEditor
           value={sourceCode}
           onChange={setSourceCode}
-          language={toMonacoLang(sourceLang)}
+          language={sourceLang.toLowerCase()}
+          onLanguageChange={setSourceLang}
         />
         <CodeEditor
           value={translatedCode}
-          language={toMonacoLang(targetLang)}
+          language={targetLang.toLowerCase()}
+          onLanguageChange={setTargetLang}
           readOnly
         />
       </div>
