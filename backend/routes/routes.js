@@ -2,7 +2,9 @@ import Anthropic from "@anthropic-ai/sdk"
 import dotenv from 'dotenv'
 import express from 'express';
 import prompts from './prompts.json' with { type: 'json' };
+import cors from 'cors'
 
+app.use(cors())
 dotenv.config()
 const app = express();
 app.use(express.json())
