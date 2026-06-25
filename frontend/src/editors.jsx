@@ -14,7 +14,7 @@ export default function CodeEditor({ value, onChange, onLanguageChange, language
         <select 
         value={language}
         onChange={(e) => onLanguageChange(e.target.value)}
-        className="mb-2 p-1 rounded bg-zinc-800 text-white"
+        className="left-2 mb-2 p-1 rounded bg-zinc-800 text-white"
       >
         {LANGUAGE_OPTIONS.map((lang) => (
           <option key={lang} value={lang.toLowerCase()}>
@@ -23,14 +23,16 @@ export default function CodeEditor({ value, onChange, onLanguageChange, language
         ))}
       </select>
       <Play 
-      className = "absolute top-2 right-2 z-10 p-2 bg-emerald-600 size-10"
-      onClick={async () => { const result = await fetch(api + 'runcode', {
+      className = "absolute top-0 right-0 z-10 p-2 color-emerald-600 size-10"
+      onClick={async () => { const files= [{"content": value}]
+         try{const result = await fetch(api + 'runcode/', {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ language, value })
+      body: JSON.stringify({ language, files })
     })
      const data = await result.json()
-     setOutput(data);}
+     setOutput(data.message || data);} 
+     catch(err){console.error(err.message)}}
     }
       />
       </div>
@@ -49,19 +51,8 @@ export default function CodeEditor({ value, onChange, onLanguageChange, language
         readOnly,
       }}
     />
-    <Editor
-    height="20vh"
-    language="plaintext"
-    value={output}
-    options={{
-        minimap: { enabled: false },
-        fontSize: 10,
-        wordWrap: "on",
-        scrollBeyondLastLine: false,
-        automaticLayout: true,
-        readOnly: true,
-    }}
-    />
+    {output && <pre className="bg-[#141414] text-left text-xs text-[#d4d4d4] font-mono h-[20vh] overflow-y-auto p-4 m-0 w-full">{output}</pre>}
+    
     </div>
     
   );

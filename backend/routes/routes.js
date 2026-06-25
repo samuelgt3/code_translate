@@ -4,10 +4,11 @@ import express from 'express';
 import prompts from './prompts.json' with { type: 'json' };
 import cors from 'cors'
 
-app.use(cors())
+
 dotenv.config()
 const app = express();
 app.use(express.json())
+app.use(cors())
 const port = 3000;
 const piston = 'http://localhost:2000/api/v2/'
 const translate = prompts.Translate
@@ -22,7 +23,16 @@ app.listen(port, () => {
 app.get('/', (res) => {
   res.send('The server is running. Please deploy the react app to interact with it');
 });
+function compareVersions(a, b) {
+  const partsA = a.split(".").map(Number);
+  const partsB = b.split(".").map(Number);
 
+  for (let i = 0; i < partsA.length; i++) {
+    if (partsA[i] > partsB[i])  return a;   // a is newer
+    if (partsA[i] < partsB[i]) return b;  // b is newer
+  }
+  return a; // equal
+}
 async function getRuntimes(av = 0) {
   let runtimes = new Map();
   try {
@@ -31,26 +41,39 @@ async function getRuntimes(av = 0) {
       const result = await fetch(piston + 'runtimes', { method: "GET" });
       res = await result.json();
       for (let i = 0; i < res.length; i++) {
-        runtimes.set(res[i]["language"], res[i]["version"]);
+        if(runtimes.get(res[i]["language"])){
+          const stored = runtimes.get(res[i]["language"]);
+          const incoming = res[i]["version"];
+          const x = compareVersions(stored, incoming);
+          console.log(`stored: ${stored}, incoming: ${incoming}, winner: ${x}`)
+        runtimes.set(res[i]["language"], x);}
+        else {
+        runtimes.set(res[i]["language"], res[i]["version"]);}}
       }
-    } else if (av===0) {
+      
+     else if (av===0) {
       const result = await fetch(piston + 'packages', { method: "GET" });
       res = await result.json();
       for (let i = 0; i < res.length; i++) {
-        runtimes.set(res[i]["language"], res[i]["language_version"]);
+        if(runtimes.get(res[i]["language"])){
+        const stored = runtimes.get(res[i]["language"]);
+        const incoming = res[i]["version"];
+        const x = compareVersions(stored, incoming);
+        console.log(`stored: ${stored}, incoming: ${incoming}, winner: ${x}`)
+        runtimes.set(res[i]["language"], x);}
+        else{
+          runtimes.set(res[i]["language"], res[i]["language_version"]);}
+        }
       }
-    }
     return runtimes;
   } catch (err) {
     throw new Error(`Execution failed: ${err.message}`);
   }
 }
 
-async function downloadRuntime(req){
-  const {language, version} = req.body
-  if (!version){
-    version = (await getRuntimes()).get(language)
-  }
+async function downloadRuntime(language){
+  const version = await (getRuntimes()).get(language)
+  console.log(language, version)
   try{
   const res = await fetch(piston + "packages", {
   method: "POST",
@@ -60,10 +83,9 @@ async function downloadRuntime(req){
     version: version
   })
 });
-const result = await res.json();
-return result
+return [language, version]
 } catch (err){
-  throw new Error({message: "Failed to download language", error: err.message})
+  throw new Error({message: "Failed to download language", error: err})
 }
 }
 
@@ -76,25 +98,32 @@ app.get('/api/runtimes/', async (res) => {
     console.log(err)
     return res.send({err})
 }})
+
 // Run code using Piston API
-async function runCode( {language, version, files}) {
+async function runCode( req) {
 //Checking if the language is already downloading, downloading otherwise
-  const runtimes = await getRuntimes(0);
-  const ver = runtimes.get(language)
-  if ((!version)||(!ver===version) ){
+try{const runtimes = await getRuntimes(1);
+  let version = runtimes.get(language)
+  console.log(version,language)}
+  catch(err){console.log(JSON.stringify(err))}
+  
+  if ((!version) ){
     try{
-      downloadRuntime({language, version})
+      version = downloadRuntime(language)[1]
+      console.log(version,language)
     }catch (err){
-      throw new Error(`This version of this language is not available, error:  ${err.error}`)
+      throw new Error(`This language is not available, error:  ${err.error}`)
     }
   }
-
+  req["version"]=version
+  console.log(req)
 //Call the piston API
+let response
   try {
     const result = await fetch(piston + 'execute', {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ language, version, files })
+      body: JSON.stringify(req)
     });
 
 //getting the output from the response
@@ -111,17 +140,18 @@ const output = response.run.stdout
 app.post('/api/runcode/', async (req, res) => {
 
   //Check if the required parameters are given
-  const { files, language, version } = req.body;
-  if (!files || !language || !version) {
-    return res.status(400).json({ message: "Input is missing parameters" });
+  const { language, files } = req.body;
+
+  if (!files || !language) {
+    return res.status(400).json("Input is missing parameters "+files["content"]+"c" +language);
   }
 
 
   try {
-    const output = await runCode({ language, version, files });
+    const output = await runCode(req);
     return res.json({ output });
   } catch (err) {
-    return res.status(500).json({ message: "Execution failed", error: err.message });
+    return res.status(500).json({ message: "Execution failed:"+ err });
   }});
 
 app.post('/api/translate/', async (req,res) => {

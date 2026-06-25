@@ -3,6 +3,7 @@ import './App.css'
 import  CodeEditor  from './editors'
 
 const handleTranslate = async () => {
+  const [loading, setLoading] = useState(false);
     setLoading(true);
     try {
       const res = await fetch("http://localhost:3000/api/translate/", {
@@ -20,10 +21,9 @@ const handleTranslate = async () => {
   };
 
 function App() {
-  const [count, setCount] = useState(0)
   const [sourceCode, setSourceCode] = useState("")
-  const [targetLang, setTargetLang] = useState("")
-  const [sourceLang, setSourceLang] = useState("")
+  const [targetLang, setTargetLang] = useState("Python")
+  const [sourceLang, setSourceLang] = useState("Python")
   const [translatedCode, setTranslatedCode] = useState("");
   const [loading, setLoading] = useState(false);
   return (
