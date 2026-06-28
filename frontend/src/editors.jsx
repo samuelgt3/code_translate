@@ -31,7 +31,7 @@ export default function CodeEditor({ value, onChange, onLanguageChange, language
       body: JSON.stringify({ language, files })
     })
      const data = await result.json()
-     setOutput(data.message || data);} 
+     setOutput(data.message || data.output);} 
      catch(err){console.error(err.message)}}
     }
       />
