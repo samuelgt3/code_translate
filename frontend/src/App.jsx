@@ -2,8 +2,16 @@ import { useState } from 'react'
 import './App.css'
 import  CodeEditor  from './editors'
 
-const handleTranslate = async () => {
+
+
+function App() {
+  
+  const [sourceCode, setSourceCode] = useState("")
+  const [targetLang, setTargetLang] = useState("Python")
+  const [sourceLang, setSourceLang] = useState("Python")
+  const [translatedCode, setTranslatedCode] = useState("");
   const [loading, setLoading] = useState(false);
+  const handleTranslate = async () => {
     setLoading(true);
     try {
       const res = await fetch("http://localhost:3000/api/translate/", {
@@ -13,19 +21,13 @@ const handleTranslate = async () => {
       });
       const data = await res.json();
       setTranslatedCode(data.content ?? "");
+      console.log(translatedCode)
     } catch (err) {
       console.error(err);
     } finally {
       setLoading(false);
     }
   };
-
-function App() {
-  const [sourceCode, setSourceCode] = useState("")
-  const [targetLang, setTargetLang] = useState("Python")
-  const [sourceLang, setSourceLang] = useState("Python")
-  const [translatedCode, setTranslatedCode] = useState("");
-  const [loading, setLoading] = useState(false);
   return (
     <div className="p-4">
       <div className="flex justify-between mb-4">

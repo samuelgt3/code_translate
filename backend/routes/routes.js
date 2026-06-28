@@ -68,8 +68,11 @@ async function getRuntimes(av = 0) {
     throw new Error(`Execution failed: ${JSON.stringify(err)}`);
   }
 }
-console.log(getRuntimes(0))
+
 async function downloadRuntime(language){
+  if(language=="javascript"){
+    language="node"
+  }
   const versions = await (getRuntimes(0))
   const version = versions.get(language)
   try{
@@ -110,7 +113,7 @@ async function runCode( req) {
 
 //getting the output from the response
 const response = await result.json();
-const output = response.run.stdout
+const output = response.run.stdout || response.run.stderr
     return output
 
   } catch (err){
@@ -169,14 +172,7 @@ const response = await client.messages.create({
 });
 const result = JSON.parse(response.content[0].text);
 console.log(result)
-    const pistoncode = {
-      language: result.language,
-      version: runtimes.get(language),
-      files: [{ name: `main.${result.language}`, content: result.content }]
-    };
-    console.log(pistoncode)
-    
-    return res.json(pistoncode);
+    return res.json(result);
   } catch(err){
       console.log(err)
       return res.status(400).json({message: "Error calling Claude API", details: err.message})
