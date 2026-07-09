@@ -1,16 +1,17 @@
 import { useState } from 'react'
 import './App.css'
 import  CodeEditor  from './editors'
-
+import ChatBar from './chat'
 
 
 function App() {
   
   const [sourceCode, setSourceCode] = useState("")
-  const [targetLang, setTargetLang] = useState("Python")
+  const [targetLang, setTargetLang] = useState("Javascript")
   const [sourceLang, setSourceLang] = useState("Python")
   const [translatedCode, setTranslatedCode] = useState("");
   const [loading, setLoading] = useState(false);
+  const [translated, setTranslated] = useState(true)
   const handleTranslate = async () => {
     setLoading(true);
     try {
@@ -26,30 +27,36 @@ function App() {
       console.error(err);
     } finally {
       setLoading(false);
+      setTranslated(false)
     }
   };
   return (
-    <div className="p-4">
-      <div className="flex justify-between mb-4">
-        {/* language selectors here */}
-        <button onClick={handleTranslate} disabled={loading}>
-          {loading ? "Translating..." : "Translate"}
-        </button>
-      </div>
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+    <div className='grid grid-cols-[auto_auto]'>
+    <div className="bg-slate-500 rounded m-10">
+      <div className="grid grid-cols-[1fr_auto_1fr] gap-4">
         <CodeEditor
           value={sourceCode}
           onChange={setSourceCode}
           language={sourceLang.toLowerCase()}
           onLanguageChange={setSourceLang}
         />
+        <div className="flex justify-between">
+          
+        <button onClick={handleTranslate} disabled={loading}>
+          {loading ? "Translating..." : "Translate"}
+        </button>
+      </div>
         <CodeEditor
           value={translatedCode}
           language={targetLang.toLowerCase()}
           onLanguageChange={setTargetLang}
-          readOnly
+          readOnly={translated}
         />
       </div>
+    </div>
+    <div>
+      <ChatBar/>
+    </div>
     </div>
   );
 }
