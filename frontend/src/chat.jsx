@@ -1,76 +1,62 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Send } from "lucide-react";
   
+const api = "http://localhost:3000/api/";
 
 export default function ChatBar(){
     const [messages, setMessages] = useState([]);
     const [input, setInput] = useState("")
     const [isLoading, setLoading] = useState(false)
-    const handleSubmit = async() =>{
-    
+    const [history, setHistory] = useState([]);
+
+useEffect(() => {
+  const fetchHistory = async () => {
+    const res = await fetch("http://localhost:3000/api/history/", { 
+      method: "GET", 
+      headers: { "Content-Type": "application/json" },
+      credentials: "include" 
+    });
+    const data = await res.json();
+    setHistory(data[messages]);
+  };
+  fetchHistory();
+}, []);
+    const handleSubmit = async(msg) =>{
+        const response = await fetch(api+"chat/", {
+            method: "POST",
+            credentials: "include",
+            body: msg
+        })
+        
 }
-    return <div className="flex flex-column overflow-hidden bg-black h-full w-[30vh]">
-        <div style={{ 
-          padding: '1.5rem 2rem',
-          borderTop: '1px solid rgba(30, 41, 59, 0.3)'
-        }}>
-          <div style={{ maxWidth: '56rem', margin: '0 auto' }}>
-            <div style={{ position: 'relative' }}>
-              <input
-                type="text"
-                value={input}
-                onChange={(e) => setInput(e.target.value)}
-                onKeyPress={(e) => e.key === 'Enter' && !e.shiftKey && handleSubmit(e)}
-                placeholder="Type something..."
-                disabled={isLoading}
-                style={{
-                  width: '100%',
-                  backdropFilter: 'blur(4px)',
-                  fontSize: '1rem',
-                  borderRadius: '9999px',
-                  padding: '1.25rem 4rem 1.25rem 1.75rem',
-                  backgroundColor: 'rgba(30, 41, 59, 0.5)',
-                  color: '#ffffff',
-                  border: '1px solid rgba(51, 65, 85, 0.5)',
-                  outline: 'none',
-                  boxSizing: 'border-box'
-                }}
-                onFocus={(e) => e.target.style.boxShadow = '0 0 0 2px rgba(147, 51, 234, 0.5)'}
-                onBlur={(e) => e.target.style.boxShadow = 'none'}
-              />
-              <button
-                onClick={handleSubmit}
-                disabled={!input.trim() || isLoading}
-                style={{
-                  position: 'absolute',
-                  right: '0.625rem',
-                  top: '50%',
-                  transform: 'translateY(-50%)',
-                  backgroundColor: !input.trim() || isLoading ? '#334155' : '#9333ea',
-                  color: '#ffffff',
-                  cursor: !input.trim() || isLoading ? 'not-allowed' : 'pointer',
-                  borderRadius: '50%',
-                  padding: '0.75rem',
-                  border: 'none',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center'
-                }}
-                onMouseEnter={(e) => {
-                  if (input.trim() && !isLoading) {
-                    e.target.style.backgroundColor = '#7e22ce';
-                  }
-                }}
-                onMouseLeave={(e) => {
-                  if (input.trim() && !isLoading) {
-                    e.target.style.backgroundColor = '#9333ea';
-                  }
-                }}
-              >
-                <Send style={{ width: '1.25rem', height: '1.25rem' }} />
-              </button>
-            </div>
-          </div>
-        </div>
+    return <div className="flex flex-col overflow-hidden bg-slate-900 border-l border-slate-700 h-full w-[30vh]">
+  <div className="px-8 py-6 border-t border-slate-800/30">
+  <div className="flex-1 overflow-y-auto px-8 py-6">
+    {/* your chat messages go here */}
+  </div>
+<div className="mt-auto max-w-4xl mx-auto mb-0 bg-slate-800 border border-slate-700 rounded-full focus-within:border-purple-500 transition-colors">
+      <div className="relative">
+        <input
+          type="text"
+          value={input}
+          onChange={(e) => setInput(e.target.value)}
+          onKeyPress={(e) => e.key === 'Enter' && !e.shiftKey && handleSubmit(e)}
+          placeholder="Type something..."
+          disabled={isLoading}
+          className="w-full box-border text-base rounded-full py-5 pl-7 pr-16 bg-slate-800/50 backdrop-blur-sm text-white text-sm outline-none"
+        />
+        <button
+          onClick={handleSubmit}
+          disabled={!input.trim() || isLoading}
+          className={`absolute right-2.5 top-1/2 -translate-y-1/2 rounded-full p-3 border-none flex items-center justify-center text-white transition-colors
+            ${!input.trim() || isLoading
+              ? 'bg-slate-700 cursor-not-allowed'
+              : 'bg-purple-600 hover:bg-purple-700 cursor-pointer'}`}
+        >
+          <Send className="w-5 h-5" />
+        </button>
+      </div>
     </div>
+  </div>
+</div>
 }

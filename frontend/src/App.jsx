@@ -2,6 +2,7 @@ import { useState } from 'react'
 import './App.css'
 import  CodeEditor  from './editors'
 import ChatBar from './chat'
+import { MoveRight } from 'lucide-react'
 
 
 function App() {
@@ -31,8 +32,8 @@ function App() {
     }
   };
   return (
-    <div className='grid grid-cols-[auto_auto]'>
-    <div className="bg-slate-500 rounded m-10">
+    <div className='grid grid-cols-[auto_auto] bg-pink-100 h-screen w-full'>
+    <div className="bg-slate-400 rounded-xl shadow-2xl shadow-black/40 p-4 border border-slate-700/50 bg-slate-500 rounded m-10">
       <div className="grid grid-cols-[1fr_auto_1fr] gap-4">
         <CodeEditor
           value={sourceCode}
@@ -43,9 +44,10 @@ function App() {
         <div className="flex justify-between">
           
         <button onClick={handleTranslate} disabled={loading}>
-          {loading ? "Translating..." : "Translate"}
+          {loading ? "Translating..." : <MoveRight />}
         </button>
       </div>
+
         <CodeEditor
           value={translatedCode}
           language={targetLang.toLowerCase()}

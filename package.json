@@ -1,6 +1,8 @@
 {
   "dependencies": {
     "@monaco-editor/react": "^4.7.0",
+    "connect-redis": "^9.0.0",
+    "express-session": "^1.19.0",
     "nodemon": "^3.1.14",
     "redis": "^6.1.0"
   }

@@ -3,52 +3,31 @@ import dotenv from 'dotenv'
 import express from 'express';
 import prompts from './prompts.json' with { type: 'json' };
 import cors from 'cors'
-import { createClient } from "redis";
 import session from "express-session";
-import RedisStore from "connect-redis";
-
+import {sessionScheme, initSession} from "../db/db.js"
 
 dotenv.config()
 const app = express();
-
-app.use(express.json())
-app.use(cors())
 
 const port = 3000;
 const piston = 'http://localhost:2000/api/v2/'
 const translate = prompts.Translate
 const correct = prompts.CorrectError
+const frontend = "http://localhost:5173"
 const client = new Anthropic({
   apiKey: process.env.CLAUDE_KEY
 });
 
-const redis = createClient();
-await redis.connect();
-
-app.use(session({
-  store: new RedisStore({ redis }),  
-  secret: process.env.SESSION_SECRET,
-  resave: false,
-  saveUninitialized: false,
-  cookie: { secure: false } 
-}))
-
+app.use(express.json(),cors({
+  origin: frontend,
+  credentials: true  
+}), session(sessionScheme));
 
 app.listen(port, () => {
   console.log(`Example app listening on port ${port}`);
 });
 
-const initSession = (req, res, next) => {
-  if (!req.session.initialized) {
-    req.session.userMessage = [];
-    req.session.agentMessage = [];
-    req.session.originalCode = [];
-    req.session.translation = [];
-    req.session.initialized = true;
-    req.session.save();
-  }
-  next();
-};
+
 
 app.get('/', (res) => {
   res.send('The server is running. Please deploy the react app to interact with it');
@@ -168,6 +147,7 @@ app.post('/api/runcode/', async (req, res) => {
   }});
 
 app.post('/api/translate/', initSession, async (req,res) => {
+  console.log("translating...")
   if (!req.body?.code){
     return res.status(400).json({message: "No input code provided", status: 400})
   }
@@ -186,14 +166,24 @@ const response = await client.messages.create({
       role: "user",
       content: `target: ${language}, source: ${source}, code: ${code}`
     }
-  ],
-});
-const result = JSON.parse(response.content[0].text);
-req.sessionStore.get(sessionId, (err, session) => {
-  session.originalCode = code;
-  session.translation = result
-  req.sessionStore.set(sessionId, session, (err) => {});
-});
+  ], 
+  output_config: {
+    format: {
+      type: "json_schema",
+      schema: {
+        type: "object",
+        properties: {
+          "language": { type: "string" },
+          "content": { type: "string" },
+        },
+        required: ["language", "content"],
+        additionalProperties: false
+      }}}});
+const result =  JSON.parse(response.content[0].text);
+const session = req.session
+session.originalCode = code
+session.translation = result
+
     return res.json(result);
   } catch(err){
       console.log(err)
@@ -201,14 +191,9 @@ req.sessionStore.get(sessionId, (err, session) => {
     }
 })
 
-app.post("/correct", async (req,res) =>{
-const { userMessage, agentMessage, originalCode, translation } = req.session;
+app.post("/api/chat/", initSession, async (req,res) =>{
+const store = req.session;
 const msg = req.body
-const history = [originalCode, translation];
-for (let i = 0; i < req.session.userMessage.length; i++) {
-  history.push({ role: "user", content: userMessage[i] });
-  history.push({ role: "assistant", content: agentMessage[i] });
-}
 const response = await client.messages.create({
   model: "claude-opus-4-8",
   max_tokens: 1024,
@@ -222,10 +207,20 @@ const response = await client.messages.create({
     }
   ],})
   const result = JSON.parse(response.content[0].text);
+  store.userMessage.push(msg)
+  store.agentMessage.push(result)
   return res.json(result)
 })
 
+app.get("/api/history/", (req, res)=> {
+  data = req.session
+  const messages = [];
+  for (let i = 0; i < data.userMessage.length; i++) {
+      messages.push({ role: "user", content: data.userMessage[i] });
+      messages.push({ role: "assistant", content: data.agentMessage[i] });
+    }
+    console.log("recorded")
+    return res.json(messages)
+})
 
-
-//export {app};
 
