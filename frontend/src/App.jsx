@@ -32,7 +32,7 @@ function App() {
     }
   };
   return (
-    <div className='grid grid-cols-[auto_auto] bg-pink-100 h-screen w-full'>
+    <div className='grid grid-cols-[auto_auto] bg-pink-100 h-screen w-full justify-between'>
     <div className="bg-slate-400 rounded-xl shadow-2xl shadow-black/40 p-4 border border-slate-700/50 bg-slate-500 rounded m-10">
       <div className="grid grid-cols-[1fr_auto_1fr] gap-4">
         <CodeEditor
