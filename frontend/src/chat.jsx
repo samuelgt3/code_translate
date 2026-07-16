@@ -20,63 +20,57 @@ useEffect(() => {
   };
   fetchHistory();
 }, []);
-    const handleSubmit = async(msg) =>{
-      setLoading()
+    const handleSubmit = async() =>{
+      setLoading(true)
+      let hist = history
+      hist.push({ role: "user", content: input });
+      setHistory(hist)
+      try{
         const response = await fetch(api+"chat/", {
             method: "POST",
             credentials: "include",
-            body: msg
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({message:input})
+            
         })
-        const result = await response.json()
-        let hist = history
-        hist.push({ role: "user", content: msg });
+        console.log("received")
+      const result = await response.json()
+       console.log(result)
         hist.push({ role: "assistant", content: result });
         setHistory(hist)
+    }catch(err){
+          console.log(err)
+        }
+        
+       setLoading(false)
         setInput("")
         
 }
-    return <div className="flex flex-col overflow-hidden bg-slate-900 border-l border-slate-700 h-full w-[30vh]">
-  <div className="px-8 py-6 border-t border-slate-800/30">
-  <div className="flex-1 ">
-    {history.length === 0 ? (
-            <div className="flex flex-col overflow-y-auto px-8 py-6">
-              <span>Ask a Question</span>
-            </div> ) : (
-            <div style={{ 
-              margin: '0 auto'
-            }}>
+    return <div className="flex flex-col overflow-hidden bg-slate-900 border-l border-slate-700 h-full w-[21vw]">
+  <div className="border-t border-slate-800/30 flex-1 overflow-y-auto px-8 py-6">
+  <div className="flex flex-col overflow-hidden">
               {history.map((message, index) => (
-                <div key={index} style={{ 
-                  display: 'flex',
-                  justifyContent: message.role === 'user' ? 'flex-end' : 'flex-start',
-                  marginBottom: '2rem'
-                }}>
-                  <div style={{
-                    borderRadius: '1.5rem',
-                    padding: '1rem 1.5rem',
+                <div key={index} className={`flex ${message.role=== 'user' ? 'justify-end' : 'justify-start'} mb-4`}>
+                  <div className={`p-3 rounded-xl ${message.role === 'user' ? 'bg-white': 'bg-black'}`}
+                  /*style={{
                     backgroundColor: message.role === 'user' ? 'rgba(147, 51, 234, 0.9)' : 'rgba(30, 41, 59, 0.5)',
                     color: message.role === 'user' ? '#ffffff' : '#e2e8f0'
-                  }}>
-                    <p style={{ 
-                      whiteSpace: 'pre-wrap',
-                      fontSize: '1rem',
-                      lineHeight: '1.625',
-                      margin: 0
-                    }}>{message.content}</p>
+                  }}*/>
+                    <p>{message.content}</p>
                   </div>
                 </div>
                 
               ))}
-              </div>)}
-  </div>
-<div className="mt-auto max-w-4xl mx-auto mb-0 bg-slate-800 border border-slate-700 rounded-full focus-within:border-purple-500 transition-colors">
+              </div>
+
+<div className="mt-auto max-w-4xl mx-auto mb-0 bg-slate-800 border border-slate-700 rounded-full focus-within:border-green-500 transition-colors">
       <div className="relative">
         <input
           type="text"
           value={input}
           onChange={(e) => setInput(e.target.value)}
-          onKeyPress={(e) => e.key === 'Enter' && !e.shiftKey && handleSubmit(e)}
-          placeholder="Type something..."
+          onKeyDown={(e) => e.key === 'Enter' && !e.shiftKey && handleSubmit(e)}
+          placeholder="Ask a question"
           disabled={isLoading}
           className="w-full box-border text-base rounded-full py-5 pl-7 pr-16 bg-slate-800/50 backdrop-blur-sm text-white text-sm outline-none"
         />

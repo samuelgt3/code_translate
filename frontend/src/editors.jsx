@@ -11,16 +11,16 @@ export default function CodeEditor({ value, onChange, onLanguageChange, language
     const [output, setOutput] = useState("");
   return (
     <div className="relative">
-        <div className="flex mb-2">
+        <div className="flex mb-5 bg-slate-400 pt-4">
         <Select.Root value={language}
-        onValueChange={(value) => {console.log(value, language); onLanguageChange(value)}}>        
+        onValueChange={(value) => {console.log(value, language); onLanguageChange(value)}} >        
         <Select.Trigger>    
           <Select.Value />   
           <Select.Icon />   
         </Select.Trigger>
-        <Select.Portal>      
-          <Select.Content className= "bg-zinc-900 border border-zinc-700 rounded-md shadow-lg text-white">   
-            <Select.Viewport>
+        <Select.Portal className="bg-grey-900">      
+          <Select.Content className= "bg-zinc-900 border border-zinc-700 rounded-md text-white">   
+            <Select.Viewport className="bg-grey-900">
               {languages.map(lang => (
           <Select.Item key={lang} value={lang.toLowerCase()}>
             <Select.ItemText>{lang}</Select.ItemText>
@@ -45,7 +45,7 @@ export default function CodeEditor({ value, onChange, onLanguageChange, language
     color="#2B9114"
       />
       </div>
-      <div className="bg-slate-900 rounded-b-lg overflow-hidden flex-1">
+      <div className="bg-slate-900  overflow-hidden flex-1">
         <Editor
       height="50vh"
       //width="60vh"

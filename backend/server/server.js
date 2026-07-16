@@ -93,28 +93,28 @@ session.translation = result
 })
 
 app.post("/api/chat/", initSession, async (req,res) =>{
+  console.log("chatting")
 const store = req.session;
-const msg = req.body
-const history = JSON.stringify(store.userMessage, store.agentMessage, store.originalCode, store.translation)
-try{const response = await client.messages.create({
+const msg = req.body.message
+store.userMessage.push(msg)
+const history = JSON.stringify({user: store.userMessage, agent: store.agentMessage, source: store.originalCode, translation: store.translation})
+try{
+  const response = await client.messages.create({
   model: "claude-opus-4-8",
   max_tokens: 1024,
   cache_control: { type: "ephemeral" }, 
   system: chat,
-  stream: true,
   messages: [
     {
       role: "user",
       content: `history: ${history}, current message: ${msg}`
     }
   ],})
-  console.log(JSON.stringify(response))
-  const result = JSON.parse(response.content[0].text);
-  store.userMessage.push(msg)
+  const result = "words"//JSON.parse(response.content[0].text);
   store.agentMessage.push(result)
   console.log(result)
   return res.json(result)}catch(err){
-    return res.json({error: err})
+    return res.json(error)
   }
 
 })
@@ -129,4 +129,11 @@ app.get("/api/history/", initSession, (req, res)=> {
     return res.json(messages)
 })
 
+app.post("/api/session/reset", (req, res) => {
+  req.session.destroy((err) => {
+    if (err) return res.status(500).json({ error: err.message });
+    res.clearCookie("connect.sid"); 
+    res.json({ success: true });
+  });
+});
 
