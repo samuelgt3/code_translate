@@ -110,10 +110,11 @@ try{
       content: `history: ${history}, current message: ${msg}`
     }
   ],})
-  const result = "words"//JSON.parse(response.content[0].text);
+  const result = response.content[0].text;
   store.agentMessage.push(result)
   console.log(result)
-  return res.json(result)}catch(err){
+  return res.json(result)
+}catch(err){
     return res.json(error)
   }
 
