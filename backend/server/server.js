@@ -112,7 +112,6 @@ try{
   ],})
   const result = response.content[0].text;
   store.agentMessage.push(result)
-  console.log(result)
   return res.json(result)
 }catch(err){
     return res.json(error)
@@ -136,5 +135,11 @@ app.post("/api/session/reset", (req, res) => {
     res.clearCookie("connect.sid"); 
     res.json({ success: true });
   });
+    req.session.userMessage = [];
+    req.session.agentMessage = [];
+    req.session.originalCode = [];
+    req.session.translation = [];
+    req.session.initialized = true;
+    req.session.save();
 });
 

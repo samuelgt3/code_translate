@@ -10,16 +10,16 @@ export default function CodeEditor({ value, onChange, onLanguageChange, language
     const [output, setOutput] = useState("");
   return (
     <div className="relative">
-        <div className="border-b border-slate-100 flex mb-5 bg-slate-400 pt-4 px-4 pb-2 items-center justify-between">
+        <div className="border-b border-slate-100 flex mb-5 bg-gradient-to-b from-slate-400 to-slate-500 pt-4 px-4 pb-2 items-center justify-between">
         <Select.Root value={language}
         onValueChange={(value) => {console.log(value, language); onLanguageChange(value)}} >        
-        <Select.Trigger className="flex items-center justify-between px-2 py-1 rounded focus:outline-none focus:ring-2 focus:ring-offset-0 hover: bg-pink-900">    
+        <Select.Trigger className="flex items-center justify-between px-2 py-1 rounded focus:outline-none  hover: bg-pink-900">    
           <Select.Value />   
           <Select.Icon />   
         </Select.Trigger>
         <Select.Portal className="bg-grey-900 p-2">      
-          <Select.Content className= "bg-zinc-900 border border-zinc-700 rounded-md text-white">   
-            <Select.Viewport className="bg-grey-900">
+          <Select.Content className= "bg-zinc-900 border border-zinc-700 rounded-md text-white ">   
+            <Select.Viewport className="bg-grey-900 font-semibold tracking-tight text-slate-100">
               {languages.map(lang => (
           <Select.Item key={lang} value={lang.toLowerCase()}>
             <Select.ItemText>{lang}</Select.ItemText>
@@ -38,7 +38,7 @@ export default function CodeEditor({ value, onChange, onLanguageChange, language
       body: JSON.stringify({ language, files })
     })
      const data = await result.json()
-     setOutput(data.message || data.output);} 
+     setOutput(data.output);} 
      catch(err){console.error(err.message)}}
     }
       />
@@ -66,6 +66,9 @@ export default function CodeEditor({ value, onChange, onLanguageChange, language
   }
 });}}
       options={{
+        lineNumbersMinChars: 3,
+        lineDecorationsWidth: 5, 
+        glyphMargin: false,          
         minimap: { enabled: false },
         fontSize: 10,
         wordWrap: "on",

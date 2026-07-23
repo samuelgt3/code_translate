@@ -43,8 +43,9 @@ function App() {
         />
         <div className="flex justify-between">
           
-        <button onClick={handleTranslate} disabled={loading}>
-          {loading ? "Translating..." : <MoveRight />}
+        <button  disabled={loading}>
+          {loading ? "Translating..." : <MoveRight className="flex items-center justify-center size-10 rounded-full bg-indigo-500/10 text-indigo-400 border border-indigo-500/20"
+          onClick={handleTranslate}/>}
         </button>
       </div>
 
