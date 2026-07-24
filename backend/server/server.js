@@ -36,7 +36,6 @@ app.post('/api/runcode/', async (req, res) => {
 
   //Check if the required parameters are given
   const { language, files } = req.body;
-
   if (!files || !language) {
     return res.status(400).json("Input is missing parameters ");
   }
@@ -48,7 +47,7 @@ app.post('/api/runcode/', async (req, res) => {
     return res.status(500).json({ message: "Execution failed:"+ err });
   }});
 
-app.post('/api/translate/', initSession, async (req,res) => {
+app.post('/api/translate/', async (req,res) => {
   if (!req.body?.code){
     return res.status(400).json({message: "No input code provided", status: 400})
   }
@@ -56,6 +55,7 @@ app.post('/api/translate/', initSession, async (req,res) => {
     return res.status(400).json({message: "Source and target language", status: 400})
   }
 const { target: language, code: code, src: source } = req.body || {}
+
 try{
 const response = await client.messages.create({
   model: "claude-opus-4-8",
@@ -83,8 +83,11 @@ const response = await client.messages.create({
 const result =  JSON.parse(response.content[0].text);
 const session = req.session
 session.originalCode = code
-session.translation = result
-
+session.translation = result.content
+console.log(session.originalCode, session.translation)
+await req.session.save((err)=>{
+  if(err){console.log("error" + err)}
+})
     return res.json(result);
   } catch(err){
       console.log(err)
@@ -92,12 +95,12 @@ session.translation = result
     }
 })
 
-app.post("/api/chat/", initSession, async (req,res) =>{
-  console.log("chatting")
+app.post("/api/chat/", async (req,res) =>{
 const store = req.session;
 const msg = req.body.message
 store.userMessage.push(msg)
 const history = JSON.stringify({user: store.userMessage, agent: store.agentMessage, source: store.originalCode, translation: store.translation})
+console.log(history)
 try{
   const response = await client.messages.create({
   model: "claude-opus-4-8",
@@ -126,20 +129,21 @@ app.get("/api/history/", initSession, (req, res)=> {
       messages.push({ role: "user", content: data.userMessage[i] });
       messages.push({ role: "assistant", content: data.agentMessage[i] });
     }
-    return res.json(messages)
+    return res.json({
+      messages: messages,
+      originalCode: data.originalCode,
+      translation: data.translation
+    })
 })
 
-app.post("/api/session/reset", (req, res) => {
-  req.session.destroy((err) => {
-    if (err) return res.status(500).json({ error: err.message });
-    res.clearCookie("connect.sid"); 
-    res.json({ success: true });
-  });
+app.post("/api/reset/", async(req, res) => {
     req.session.userMessage = [];
     req.session.agentMessage = [];
     req.session.originalCode = [];
     req.session.translation = [];
     req.session.initialized = true;
-    req.session.save();
-});
+    await req.session.save();
+    res.json({success: true})
+}
+  );
 

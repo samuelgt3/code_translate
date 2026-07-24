@@ -14,7 +14,7 @@ function App() {
   const [loading, setLoading] = useState(false);
   const [translated, setTranslated] = useState(true)
   const [initiated, setInitiated] = useState(false)
-  const [history, setHistory] = useState([]);
+  const [history, setHistory] = useState({});
 
   const handleTranslate = async () => {
     setLoading(true);
@@ -26,7 +26,6 @@ function App() {
       });
       const data = await res.json();
       setTranslatedCode(data.content ?? "");
-      console.log(translatedCode)
     } catch (err) {
       console.error(err);
     } finally {
@@ -34,8 +33,17 @@ function App() {
       setTranslated(false)
     }
   };
+  const resetSession = async() =>{
+      const res = await fetch("http://localhost:3000/api/reset/", { 
+      method: "POST", 
+      headers: { "Content-Type": "application/json" },
+      credentials: "include" 
+    });
+    
+    }
   useEffect(()=> {
-    const initSession = async() => {
+    
+    const getHistory = async() => {
       const res = await fetch("http://localhost:3000/api/history/", { 
       method: "GET", 
       headers: { "Content-Type": "application/json" },
@@ -44,31 +52,36 @@ function App() {
     const data = await res.json();
     setHistory(data);
     
-      setInitiated(true)
+    setInitiated(true)
     }
-    initSession()
+    getHistory()
   })
   return (
     <div className='flex flex-col h-screen overflow-hidden'>
-      <div className='flex w-full h-20 bg-blue-900 shrink-0'>
-        <button className='h-full'
+      <div className='flex justify-between w-full h-20 bg-blue-900 shrink-0'>
+        <button 
+        onClick={()=>{resetSession()}}
         >
-          <img src="Logo.png" alt="Logo" className='h-full' />
+          <img src="Logo.png" alt="Logo"  className='h-full'/>
           
         </button>
-        <button className='h-full'
+        <div className='flex flex-row items-center ml-auto gap-4 pr-10'>
+        <button
+        className='px-4'
+         onClick={()=>{window.location.href = "https://github.com/samuelgt3/code_translate.git"}}
         >
-          <img src="Logo.png" alt="Logo" className='h-full' />
+          <img src="github.svg" alt="GitHub" className='h-10 ' />
           
         </button>
-        <button className='h-full'
+        <button
+        onClick={()=>{window.location = "mailto:samueltadele878@gmail.com"}} 
         >
-          <img src="Logo.png" alt="Logo" className='h-full' />
-          
+          <img src="email.png" alt="Email" className='h-10 right-5' />
         </button>
+        </div>
       </div>
     <div className='grid grid-cols-[auto_auto] bg-pink-100 min-h-0 h-full w-full p-0'>
-    <div className=" h-fit bg-slate-400  shadow-2xl shadow-black/40 p-4 rounded-xl border-slate-700/50 bg-slate-500 m-10">
+    <div className=" h-fit bg-slate-500 shadow-2xl shadow-black/40 p-4 rounded-xl border-slate-700/50 m-10">
       <div className="grid grid-cols-[1fr_auto_1fr] gap-4">
         <CodeEditor
           value={sourceCode}
@@ -79,7 +92,7 @@ function App() {
         <div className="flex justify-between">
           
         <button  disabled={loading}>
-          {loading ? "Translating..." : <MoveRight className="flex items-center justify-center size-10 rounded-full bg-indigo-500/10 text-indigo-400 border border-indigo-500/20"
+          {loading ? "Translating..." : <MoveRight className="flex items-center justify-center size-10 rounded-full  text-indigo-400"
           onClick={handleTranslate}/>}
         </button>
       </div>
@@ -94,7 +107,7 @@ function App() {
     </div>
     <div className='h-full min-h-0'>
       {initiated && <ChatBar
-      history={history}/>}
+      history={history.messages}/>}
     </div>
     </div>
     </div>

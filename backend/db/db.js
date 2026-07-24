@@ -14,14 +14,15 @@ const sessionScheme = {
   cookie: { secure: false } 
 }
 
-const initSession = (req, res, next) => {
+const initSession = async (req, res, next) => {
   if (!req.session.initialized) {
+    console.log("intializing")
     req.session.userMessage = [];
     req.session.agentMessage = [];
-    req.session.originalCode = [];
-    req.session.translation = [];
+    req.session.originalCode = "";
+    req.session.translation = "";
     req.session.initialized = true;
-    req.session.save();
+    await req.session.save();
   }
   next();
 };
