@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import './App.css'
 import  CodeEditor  from './editors'
 import ChatBar from './chat'
@@ -13,6 +13,9 @@ function App() {
   const [translatedCode, setTranslatedCode] = useState("");
   const [loading, setLoading] = useState(false);
   const [translated, setTranslated] = useState(true)
+  const [initiated, setInitiated] = useState(false)
+  const [history, setHistory] = useState([]);
+
   const handleTranslate = async () => {
     setLoading(true);
     try {
@@ -31,8 +34,40 @@ function App() {
       setTranslated(false)
     }
   };
+  useEffect(()=> {
+    const initSession = async() => {
+      const res = await fetch("http://localhost:3000/api/history/", { 
+      method: "GET", 
+      headers: { "Content-Type": "application/json" },
+      credentials: "include" 
+    });
+    const data = await res.json();
+    setHistory(data);
+    
+      setInitiated(true)
+    }
+    initSession()
+  })
   return (
-    <div className='grid grid-cols-[auto_auto] bg-pink-100 h-screen w-full p-0'>
+    <div className='flex flex-col h-screen overflow-hidden'>
+      <div className='flex w-full h-20 bg-blue-900 shrink-0'>
+        <button className='h-full'
+        >
+          <img src="Logo.png" alt="Logo" className='h-full' />
+          
+        </button>
+        <button className='h-full'
+        >
+          <img src="Logo.png" alt="Logo" className='h-full' />
+          
+        </button>
+        <button className='h-full'
+        >
+          <img src="Logo.png" alt="Logo" className='h-full' />
+          
+        </button>
+      </div>
+    <div className='grid grid-cols-[auto_auto] bg-pink-100 min-h-0 h-full w-full p-0'>
     <div className=" h-fit bg-slate-400  shadow-2xl shadow-black/40 p-4 rounded-xl border-slate-700/50 bg-slate-500 m-10">
       <div className="grid grid-cols-[1fr_auto_1fr] gap-4">
         <CodeEditor
@@ -57,8 +92,10 @@ function App() {
         />
       </div>
     </div>
-    <div>
-      <ChatBar/>
+    <div className='h-full min-h-0'>
+      {initiated && <ChatBar
+      history={history}/>}
+    </div>
     </div>
     </div>
   );

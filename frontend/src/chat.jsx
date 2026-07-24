@@ -4,29 +4,14 @@ import Markdown from "react-markdown";
   
 const api = "http://localhost:3000/api/";
 
-export default function ChatBar(){
+export default function ChatBar({history}){
     const [input, setInput] = useState("")
     const [isLoading, setLoading] = useState(false)
-    const [history, setHistory] = useState([]);
+    const [histor, setHistory] = useState(history);
 
-useEffect(() => {
-  const fetchHistory = async () => {
-    const res = await fetch("http://localhost:3000/api/history/", { 
-      method: "GET", 
-      headers: { "Content-Type": "application/json" },
-      credentials: "include" 
-    });
-    const data = await res.json();
-    setHistory(data);
-  };
-  fetchHistory();
-}, []);
     const handleSubmit = async() =>{
       setLoading(true)
       setInput("")
-      let hist = history
-      hist.push({ role: "user", content: input });
-      setHistory(hist)
       try{
         const response = await fetch(api+"chat/", {
             method: "POST",
@@ -36,8 +21,6 @@ useEffect(() => {
             
         })
       const result = await response.json()
-        hist.push({ role: "assistant", content: result });
-        setHistory(hist)
     }catch(err){
           console.log(err)
         }
@@ -46,9 +29,9 @@ useEffect(() => {
         
 }
     return <div 
-    className="flex flex-col h-screen w-[25vw] bg-slate-900 border-l border-slate-700">
-  <div className="flex-1 overflow-y-auto px-8 py-6 border-t border-slate-800/30">
-    {history.map((message, index) => (
+    className="relative z-0 flex flex-col h-full w-[25vw] bg-slate-900 border-l border-slate-700 ">
+  <div className="flex-1 min-h-0 overflow-y-auto px-8 py-6 border-t border-slate-800/30">
+    {history.map((message, index) => message.content&&(
       <div key={index} className={`flex ${message.role === 'user' ? 'justify-end' : 'justify-start'} mb-4`}>
         <div
           className={`p-3 rounded-xl max-w-[85%] break-words overflow-hidden whitespace-pre-wrap text-xs ${message.role === 'user' ? 'bg-white': 'bg-black'}`}
