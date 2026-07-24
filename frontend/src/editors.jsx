@@ -9,11 +9,11 @@ const languages = ["Python", "JavaScript", "TypeScript", "C++", "C#", "Rust", "G
 export default function CodeEditor({ value, onChange, onLanguageChange, language, readOnly = false }) {
     const [output, setOutput] = useState("");
   return (
-    <div className="relative">
-        <div className="border-b border-slate-100 flex mb-5 bg-gradient-to-b from-slate-400 to-slate-500 pt-4 px-4 pb-2 items-center justify-between">
+    <div className="relative min-h-0">
+        <div className="border-b border-slate-100 flex mb-5 bg-editor pt-4 px-4 pb-2 items-center justify-between rounded">
         <Select.Root value={language}
         onValueChange={(value) => {console.log(value, language); onLanguageChange(value)}} >        
-        <Select.Trigger className="flex items-center justify-between px-2 py-1 rounded focus:outline-none  hover: bg-pink-900">    
+        <Select.Trigger className="flex items-center justify-between px-2 py-1 rounded focus:outline-none  bg-pink-900">    
           <Select.Value />   
           <Select.Icon />   
         </Select.Trigger>
@@ -30,7 +30,7 @@ export default function CodeEditor({ value, onChange, onLanguageChange, language
         </Select.Portal>
       </Select.Root>
       <Play
-      className = " z-10 p-2 size-10"
+      className = " z-10 p-2 size-10 fill-green-700"
       onClick={async () => { const files= [{"content": value}]
          try{const result = await fetch(api + 'runcode/', {
       method: "POST",
@@ -41,9 +41,10 @@ export default function CodeEditor({ value, onChange, onLanguageChange, language
      setOutput(data.output);} 
      catch(err){console.error(err.message)}}
     }
+    color="emerald"
       />
       </div>
-      <div className="bg-slate-900  overflow-hidden flex-1">
+      <div className="bg-slate-900  overflow-hidden flex-1 rounded min-h-0">
         <Editor
       height="50vh"
       //width="60vh"

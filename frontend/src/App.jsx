@@ -58,7 +58,7 @@ function App() {
   })
   return (
     <div className='flex flex-col h-screen overflow-hidden'>
-      <div className='flex justify-between w-full h-20 bg-blue-900 shrink-0'>
+      <div className='flex justify-between w-full h-20 bg-deep-space-blue-800 shrink-0 border-gradient'>
         <button 
         onClick={()=>{resetSession()}}
         >
@@ -67,10 +67,10 @@ function App() {
         </button>
         <div className='flex flex-row items-center ml-auto gap-4 pr-10'>
         <button
-        className='px-4'
+        className='px-2'
          onClick={()=>{window.location.href = "https://github.com/samuelgt3/code_translate.git"}}
         >
-          <img src="github.svg" alt="GitHub" className='h-10 ' />
+          <img src="github.png" alt="GitHub" className='h-14.5 text-black' />
           
         </button>
         <button
@@ -80,9 +80,9 @@ function App() {
         </button>
         </div>
       </div>
-    <div className='grid grid-cols-[auto_auto] bg-pink-100 min-h-0 h-full w-full p-0'>
-    <div className=" h-fit bg-slate-500 shadow-2xl shadow-black/40 p-4 rounded-xl border-slate-700/50 m-10">
-      <div className="grid grid-cols-[1fr_auto_1fr] gap-4">
+    <div className='grid grid-cols-[auto_auto] bg-deep-space-blue-950 min-h-0 h-full w-full p-0'>
+    <div className=" h-fit p-4 m-10">
+      <div className=" h-fit grid grid-cols-[1fr_auto_1fr] gap-4 min-h-0">
         <CodeEditor
           value={sourceCode}
           onChange={setSourceCode}
@@ -92,7 +92,7 @@ function App() {
         <div className="flex justify-between">
           
         <button  disabled={loading}>
-          {loading ? "Translating..." : <MoveRight className="flex items-center justify-center size-10 rounded-full  text-indigo-400"
+          {loading ? "Translating..." : <MoveRight className="flex items-center justify-center size-10 rounded-full  text-pink-900"
           onClick={handleTranslate}/>}
         </button>
       </div>

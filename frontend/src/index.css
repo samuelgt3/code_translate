@@ -1,2 +1,25 @@
 @import "tailwindcss";
 /*@custom-variant dark (&:where(.dark, .dark*));*/
+@theme {
+
+--color-navbar: #10273B;
+--color-background: #C1B4AE;
+--color-chatbar: #0B1C2B;
+--color-chatinput: #43021E;
+--color-agent: #00123D;
+--color-user: #A53C27;
+--color-editor: #0F172A;
+ 
+--color-deep-space-blue-50: rgb(235 243 250);
+--color-deep-space-blue-100: rgb(215 230 244);
+--color-deep-space-blue-200: rgb(175 206 233);
+--color-deep-space-blue-300: rgb(135 181 222);
+--color-deep-space-blue-400: rgb(95 157 211);
+--color-deep-space-blue-500: rgb(55 132 200);
+--color-deep-space-blue-600: rgb(44 106 160);
+--color-deep-space-blue-700: rgb(33 79 120);
+--color-deep-space-blue-800: rgb(22 53 80);
+--color-deep-space-blue-900: rgb(11 26 40);
+--color-deep-space-blue-950: rgb(8 19 28);
+
+}

@@ -29,23 +29,23 @@ export default function ChatBar({history}){
         
 }
     return <div 
-    className="relative z-0 flex flex-col h-full w-[25vw] bg-slate-900 border-l border-slate-700 ">
+    className="relative z-0 flex flex-col h-full w-[25vw] bg-chatbar border-l border-slate-700 ">
   <div className="flex-1 min-h-0 overflow-y-auto px-8 py-6 border-t border-slate-800/30">
     {history.map((message, index) => message.content&&(
       <div key={index} className={`flex ${message.role === 'user' ? 'justify-end' : 'justify-start'} mb-4`}>
         <div
-          className={`p-3 rounded-xl max-w-[85%] break-words overflow-hidden whitespace-pre-wrap text-xs ${message.role === 'user' ? 'bg-white': 'bg-black'}`}
-          style={{
+          className={`p-3 rounded-xl max-w-[85%] break-words overflow-hidden whitespace-pre-wrap text-xs text-white ${message.role === 'user' ? 'bg-agent': 'bg-pink-900'}`}
+          /*style={{
             backgroundColor: message.role === 'user' ? 'rgba(147, 51, 234, 0.9)' : 'rgba(30, 41, 59, 0.5)',
             color: message.role === 'user' ? '#ffffff' : '#e2e8f0'
-          }}
+          }}*/
         >
           <Markdown>{message.content}</Markdown>
         </div>
       </div>
     ))}
   </div>
-  <div className="shrink-0 px-4 pb-4">
+  <div className="shrink-0 p-4 bg-deep-space-blue-900 border-white">
     <div className="bg-slate-800 border border-slate-700 rounded-full focus-within:border-green-500 transition-colors">
       <div className="relative">
         <input
