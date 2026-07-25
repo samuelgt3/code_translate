@@ -10,10 +10,10 @@ export default function CodeEditor({ value, onChange, onLanguageChange, language
     const [output, setOutput] = useState("");
   return (
     <div className="relative min-h-0">
-        <div className="border-b border-slate-100 flex mb-5 bg-editor pt-4 px-4 pb-2 items-center justify-between rounded">
+        <div className="border-b  border-slate-700 flex mb-5 bg-[#09090B] pt-4 px-4 pb-2 items-center justify-between rounded">
         <Select.Root value={language}
         onValueChange={(value) => {console.log(value, language); onLanguageChange(value)}} >        
-        <Select.Trigger className="flex items-center justify-between px-2 py-1 rounded focus:outline-none  bg-pink-900">    
+        <Select.Trigger className="flex items-center justify-between px-2 py-1 rounded focus:outline-none  bg-deep-space-blue-800">    
           <Select.Value />   
           <Select.Icon />   
         </Select.Trigger>
@@ -30,7 +30,7 @@ export default function CodeEditor({ value, onChange, onLanguageChange, language
         </Select.Portal>
       </Select.Root>
       <Play
-      className = " z-10 p-2 size-10 fill-green-700"
+      className = " z-10 p-2 size-10 fill-bg2"
       onClick={async () => { const files= [{"content": value}]
          try{const result = await fetch(api + 'runcode/', {
       method: "POST",
@@ -44,7 +44,7 @@ export default function CodeEditor({ value, onChange, onLanguageChange, language
     color="emerald"
       />
       </div>
-      <div className="bg-slate-900  overflow-hidden flex-1 rounded min-h-0">
+      <div className="overflow-hidden flex-1 rounded min-h-0 border border-slate-800">
         <Editor
       height="50vh"
       //width="60vh"
@@ -57,14 +57,14 @@ export default function CodeEditor({ value, onChange, onLanguageChange, language
   inherit: true,
   rules: [],
   colors: {
-    'editor.background': '#0F172A',
-    'editor.lineHighlightBackground': '#1E293B',
-    'editorLineNumber.foreground': '#64748B',
-    'editorLineNumber.activeForeground': '#94A3B8',
-    'editorCursor.foreground': '#6366F1',
-    'editor.selectionBackground': '#334155',
-    'editorGutter.background': '#0F172A',
-  }
+  'editor.background': '#09090B',        // zinc-950
+  'editor.lineHighlightBackground': '#18181B',
+  'editorLineNumber.foreground': '#52525B',
+  'editorLineNumber.activeForeground': '#A1A1AA',
+  'editorCursor.foreground': '#E11D48',  // rose-600
+  'editor.selectionBackground': '#27272A',
+  'editorGutter.background': '#09090B',
+}
 });}}
       options={{
         lineNumbersMinChars: 3,
@@ -79,7 +79,7 @@ export default function CodeEditor({ value, onChange, onLanguageChange, language
         padding: { top: 16, left: 4 }
       }}
     />
-    {output && <pre className="bg-[#141414] text-left text-xs text-[#d4d4d4] font-mono h-[20vh] overflow-y-auto p-4 m-0 ">{output}</pre>}
+    {<pre className="bg-black text-left text-xs text-[#d4d4d4] font-mono h-[20vh] overflow-y-auto p-4 m-0 ">{output}</pre>}
     </div>
     </div>
     

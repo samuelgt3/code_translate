@@ -62,7 +62,7 @@ function App() {
         <button 
         onClick={()=>{resetSession()}}
         >
-          <img src="Logo.png" alt="Logo"  className='h-full'/>
+          <img src="Logo.png" alt="Logo"  className='h-full py-2 px-5'/>
           
         </button>
         <div className='flex flex-row items-center ml-auto gap-4 pr-10'>
@@ -81,7 +81,7 @@ function App() {
         </div>
       </div>
     <div className='grid grid-cols-[auto_auto] bg-deep-space-blue-950 min-h-0 h-full w-full p-0'>
-    <div className=" h-fit p-4 m-10">
+    <div className=" h-fit p-4 m-10 bg-linear-to-t rounded min-h-0">
       <div className=" h-fit grid grid-cols-[1fr_auto_1fr] gap-4 min-h-0">
         <CodeEditor
           value={sourceCode}
@@ -92,7 +92,7 @@ function App() {
         <div className="flex justify-between">
           
         <button  disabled={loading}>
-          {loading ? "Translating..." : <MoveRight className="flex items-center justify-center size-10 rounded-full  text-pink-900"
+          {loading ? "Translating..." : <MoveRight className="flex items-center justify-center size-10 rounded-full  text-bg2"
           onClick={handleTranslate}/>}
         </button>
       </div>

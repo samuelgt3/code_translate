@@ -34,7 +34,7 @@ export default function ChatBar({history}){
     {history.map((message, index) => message.content&&(
       <div key={index} className={`flex ${message.role === 'user' ? 'justify-end' : 'justify-start'} mb-4`}>
         <div
-          className={`p-3 rounded-xl max-w-[85%] break-words overflow-hidden whitespace-pre-wrap text-xs text-white ${message.role === 'user' ? 'bg-agent': 'bg-pink-900'}`}
+          className={`p-3 rounded-xl max-w-[95%] break-words overflow-hidden whitespace-pre-wrap text-xs text-white ${message.role === 'user' ? 'bg-deep-space-blue-700': 'bg-bg2'}`}
           /*style={{
             backgroundColor: message.role === 'user' ? 'rgba(147, 51, 234, 0.9)' : 'rgba(30, 41, 59, 0.5)',
             color: message.role === 'user' ? '#ffffff' : '#e2e8f0'
@@ -46,7 +46,7 @@ export default function ChatBar({history}){
     ))}
   </div>
   <div className="shrink-0 p-4 bg-deep-space-blue-900 border-white">
-    <div className="bg-slate-800 border border-slate-700 rounded-full focus-within:border-green-500 transition-colors">
+    <div className="bg-slate-800 border border-slate-700 rounded-full focus-within:border-deep-space-blue-700 transition-colors">
       <div className="relative">
         <input
           type="text"
