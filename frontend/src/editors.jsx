@@ -4,7 +4,7 @@ import { useState } from "react";
 import { Select } from 'radix-ui'
 import { ChevronDown } from 'lucide-react'
 
-const api = "http://localhost:3000/api/";
+const api = "https://codetranslate.uk"
 const languages = ["Python", "JavaScript", "TypeScript", "C++", "C#", "Rust", "Go", "Java"]
 
 export default function CodeEditor({ value, onChange, onLanguageChange, language, readOnly = false }) {

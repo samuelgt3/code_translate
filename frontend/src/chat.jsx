@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from "react";
 import { Send } from "lucide-react";
 import Markdown from "react-markdown";
 
-const api = "http://localhost:3000/api/";
+const api = "https://codetranslate.uk"
 
 export default function ChatBar() {
   const [input, setInput] = useState("");

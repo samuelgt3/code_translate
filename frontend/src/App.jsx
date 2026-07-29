@@ -4,6 +4,8 @@ import CodeEditor from './editors'
 import ChatBar from './chat'
 import { MoveRight } from 'lucide-react'
 
+const api = "https://codetranslate.uk"
+
 function App() {
   const [targetLang, setTargetLang] = useState("Javascript")
   const [sourceLang, setSourceLang] = useState("Python")
@@ -19,7 +21,7 @@ function App() {
   const handleTranslate = async () => {
     setLoading(true);
     try {
-      const res = await fetch("http://localhost:3000/api/translate/", {
+      const res = await fetch(api+"translate/", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         credentials: "include",
@@ -36,7 +38,7 @@ function App() {
   };
 
   const resetSession =  () => {
-     fetch("http://localhost:3000/api/reset/", {
+     fetch(api+"reset/", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       credentials: "include"
@@ -45,7 +47,7 @@ function App() {
 
   useEffect(() => {
     const getHistory = async () => {
-      const res = await fetch("http://localhost:3000/api/history/", {
+      const res = await fetch(api+"history/", {
         method: "GET",
         headers: { "Content-Type": "application/json" },
         credentials: "include"
