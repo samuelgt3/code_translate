@@ -16,7 +16,6 @@ const sessionScheme = {
 
 const initSession = async (req, res, next) => {
   if (!req.session.initialized) {
-    console.log("intializing")
     req.session.userMessage = [];
     req.session.agentMessage = [];
     req.session.originalCode = "";
