@@ -4,7 +4,7 @@ import CodeEditor from './editors'
 import ChatBar from './chat'
 import { MoveRight } from 'lucide-react'
 
-const api = "https://codetranslate.uk"
+const api = "https://codetranslate.uk/api/"
 
 function App() {
   const [targetLang, setTargetLang] = useState("Javascript")
